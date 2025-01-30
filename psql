@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -z $1 ]; then
+    DB="source"
+else
+    DB=$1
+fi
+echo "=================================================================="
+echo "Attaching to: pglogical_${DB}_db"
+
+if [ -z $2 ]; then
+    CMD="psql postgres postgres"
+else
+    CMD=$2
+fi
+echo "Running:      $CMD"
+echo "------------------------------------------------------------------"
+
+
+docker exec -it pglogical_${DB}_db ${CMD}

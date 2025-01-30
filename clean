@@ -1,0 +1,14 @@
+#!/bin/bash
+
+
+echo "============================================================================="
+echo "Removing docker containers and volumes."
+echo "-----------------------------------------------------------------------------"
+
+# Remove containers.
+docker rm pglogical_source_db pglogical_target_db
+
+# Remove volumes.
+docker volume rm pglogical_source_data pglogical_target_data
+
+echo "pglogical-lab image and network are still available."

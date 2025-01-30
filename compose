@@ -1,0 +1,10 @@
+#!/bin/bash
+
+export DOCKER_BUILDKIT=1
+
+docker compose \
+    --verbose \
+    --project-directory . \
+    --project-name pglogical-lab \
+    --file docker-compose.yaml \
+    up --build --remove-orphans

@@ -1,0 +1,124 @@
+# Compose file to run our container.  The following will occur:
+#
+#   - Port 8000 will be published to localhost
+#   - The current working directory will be bound to the container /home/outie/rockstack directory.
+#
+# Run the compose file:
+#
+#   docker compose --file <this-filename> --project-name rockstack up --build --remove-orphans
+#
+# Adding --build will cause the container to be re-built, may not be necessary
+# with the volume bind.
+#
+#   docker compose --file <this-filename> --project-name rockstack up --build --remove-orphans
+#
+# You can get a shell on the running container with the following.  Make sure
+# the container is running as the name `rockstack_falcon_1`.
+#
+#   docker exec -it rockstack_falcon_1 /bin/bash
+#
+# If you're using VSCode be sure to add the Docker extension.  You can use it to
+# run VSCode bound to the container filesystem, and you can use it to run a
+# shell on the running container.
+
+
+services:
+    # Connect to this container:
+    # docker exec --interactive --tty talus "/bin/bash"
+    source:
+        image: pglogical-lab
+
+        container_name: pglogical_source_db
+
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+
+        build:
+          context: .
+          dockerfile: Dockerfile
+
+        ports:
+            - "5432:5432"
+
+        volumes:
+            # Put the database files on a named volume.
+          - type: volume
+            source: pglogical_source_data
+            target: /var/lib/postgresql/data
+            volume:
+              nocopy: true
+
+          - type: bind
+            source: ./postgresql.conf
+            target: /etc/postgresql/postgresql.conf
+
+          - type: bind
+            source: ./init-db.sql
+            target: /docker-entrypoint-initdb.d/init-db.sql
+
+          - type: bind
+            source: .
+            target: /lab
+
+        networks:
+            - pglogical-lab
+
+
+    # Connect to this container:
+    # docker exec --interactive --tty talus "/bin/bash"
+    target:
+        image: pglogical-lab
+
+        container_name: pglogical_target_db
+
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+
+        build:
+          context: .
+          dockerfile: Dockerfile
+
+        ports:
+            - "5433:5432"
+
+        volumes:
+            # Put the database files on a named volume.
+          - type: volume
+            source: pglogical_target_data
+            target: /var/lib/postgresql/data
+            volume:
+              nocopy: true
+
+          - type: bind
+            source: ./postgresql.conf
+            target: /etc/postgresql/postgresql.conf
+
+          - type: bind
+            source: ./init-db.sql
+            target: /docker-entrypoint-initdb.d/init-db.sql
+
+          - type: bind
+            source: .
+            target: /lab
+
+        networks:
+            - pglogical-lab
+
+
+volumes:
+    # Declare a named volume to hold the postgres database.
+   pglogical_source_data:
+     # Use a permanent volume for our database.
+     name: pglogical_source_data
+
+   pglogical_target_data:
+     # Use a permanent volume for our database.
+     name: pglogical_target_data
+
+
+networks:
+  pglogical-lab:

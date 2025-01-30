@@ -7,11 +7,32 @@ The intent is to highlight the server configuration, extension installation, and
 target configurations.
 
 
+
 ## Reading
 
 * [pglogical on GitHub](https://github.com/2ndQuadrant/pglogical)
 * [AWS DMS Doc](https://docs.aws.amazon.com/dms/latest/sbs/chap-manageddatabases.postgresql-rds-postgresql-full-load-pglogical.html)
 * [Random Medium Article](https://medium.com/@Navmed/setting-up-replication-in-postgresql-with-pglogical-8212e77ebc1b)
+
+
+
+## Usage
+
+`./clean`  
+Removes containers and volumes; leaves image and network.
+
+`./compose`  
+Runs source and target databases in the foreground.
+
+`./psql [target]`  
+Attaches a psql shell on the source or target database.
+
+`./restart`  
+Runs clean followed by compose, to give you a fresh start.
+
+`./run`  
+Runs the default postgres:15-bookworm image.
+
 
 
 ## Notes

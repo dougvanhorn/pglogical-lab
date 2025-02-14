@@ -11,7 +11,8 @@ target configurations.
 ## Reading
 
 * [pglogical on GitHub](https://github.com/2ndQuadrant/pglogical)
-* [AWS DMS Doc](https://docs.aws.amazon.com/dms/latest/sbs/chap-manageddatabases.postgresql-rds-postgresql-full-load-pglogical.html)
+* [AWS GCP Migration](https://aws.amazon.com/blogs/database/migrate-postgresql-from-google-cloud-platform-to-amazon-rds-with-minimal-downtime/)
+* [AWS DMS](https://docs.aws.amazon.com/dms/latest/sbs/chap-manageddatabases.postgresql-rds-postgresql-full-load-pglogical.html)
 * [Random Medium Article](https://medium.com/@Navmed/setting-up-replication-in-postgresql-with-pglogical-8212e77ebc1b)
 
 

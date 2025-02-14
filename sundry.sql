@@ -1,4 +1,3 @@
-
 -- =============================================================================
 -- Source Database
 -- -----------------------------------------------------------------------------
@@ -7,11 +6,11 @@
 create user lab with superuser login password 'lab';
 
 -- Create the database, table, and data on source
-create database foo with owner lab;
+create database lab with owner lab;
 
 
 -- CONNECT TO FOO
-\c foo lab
+\c lab lab
 
 create table colors (
     id serial primary key,
@@ -30,7 +29,7 @@ create extension pglogical;
 -- Create the provider / source node.
 select pglogical.create_node(
     node_name := 'provider',
-    dsn := 'host=pglogical_source_db port=5432 dbname=foo user=postgres password=postgres'
+    dsn := 'host=pglogical_source_db port=5432 dbname=lab user=postgres password=postgres'
     -- dsn := 'host=pglogical_source_db port=5432 dbname=foo user=lab password=lab'
 );
 
@@ -40,13 +39,41 @@ select pglogical.replication_set_add_all_tables (
     ARRAY['public']
 );
 select pglogical.replication_set_add_all_sequences (
-    'default',
-    ARRAY['public']
+    set_name := 'default',
+    schema_names := ARRAY['public'],
+    synchronize_data := true
 );
 
 update colors set description = 'Green''s my favorite flavor!' where name = 'green';
 
 
+insert into colors (name, description) values (
+    ('pink', 'Accounting.'),
+    ('fuscia', 'Purchasing.'),
+    ('goldenrod', 'Roz'),
+    ('puce', 'Leave it!')
+)
+
+
+
+-- Generate sequence synchronization script for all sequennces.
+select 'SELECT pglogical.synchronize_sequence(''' || relname || ''');' as sql
+from pg_catalog.pg_statio_user_sequences
+order by sql;
+
+create or replace function update_target_sequences()
+returns void
+as $$
+declare
+    t_curs cursor for select relname from pg_catalog.pg_statio_user_sequences;
+    t_row pg_catalog.pg_statio_user_sequences%rowtype;
+begin
+    for t_row in t_curs loop
+        execute format('SELECT pglogical.synchronize_sequence(%L);', t_row.relname);
+    end loop;
+end;
+$$
+language plpgsql;
 
 
 -- =============================================================================
@@ -56,23 +83,23 @@ set session_replication_role = 'replica';
 
 create user lab with superuser login password 'lab';
 
-create database foo with owner lab;
+create database lab with owner lab;
 
 -- CONNECT TO FOO
-\c foo lab
+\c lab lab
 
 create extension pglogical;
 -- grant all on schema pglogical to lab;
 
 select pglogical.create_node(
     node_name := 'subscriber',
-    dsn := 'host=pglogical_target_db port=5432 dbname=foo user=postgres password=postgres'
+    dsn := 'host=pglogical_target_db port=5432 dbname=lab user=postgres password=postgres'
     -- dsn := 'host=pglogical_target_db port=5432 dbname=foo user=lab password=lab'
 );
 
 select pglogical.create_subscription(
     subscription_name := 'subscription',
-    provider_dsn := 'host=pglogical_source_db port=5432 dbname=foo user=postgres password=postgres',
+    provider_dsn := 'host=pglogical_source_db port=5432 dbname=lab user=postgres password=postgres',
     -- provider_dsn := 'host=pglogical_source_db port=5432 dbname=foo user=lab password=lab',
     -- replication_sets := ARRAY['test_tables']
     synchronize_structure := true

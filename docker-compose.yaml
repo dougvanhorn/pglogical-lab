@@ -51,7 +51,7 @@ services:
               nocopy: true
 
           - type: bind
-            source: ./postgresql.conf
+            source: ./postgresql-source.conf
             target: /etc/postgresql/postgresql.conf
 
           - type: bind
@@ -94,7 +94,7 @@ services:
               nocopy: true
 
           - type: bind
-            source: ./postgresql.conf
+            source: ./postgresql-target.conf
             target: /etc/postgresql/postgresql.conf
 
           - type: bind

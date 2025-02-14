@@ -35,8 +35,69 @@ Runs clean followed by compose, to give you a fresh start.
 Runs the default postgres:15-bookworm image.
 
 
+## Preparing the Databases
 
-## Notes
+All databases have the root user: `postgres` / `postgres`.  See the docker-compose.yaml file for details.
+
+
+*Configure the source database:*
+
+```sh
+$ ./psql source
+
+postgres=# \i /lab/source_setup.sql 
+CREATE ROLE
+CREATE DATABASE
+You are now connected to database "lab_source" as user "lab".
+CREATE TABLE
+INSERT 0 3
+CREATE EXTENSION
+ create_node 
+-------------
+  3171898924
+(1 row)
+
+ replication_set_add_all_tables 
+--------------------------------
+ t
+(1 row)
+
+ replication_set_add_all_sequences 
+-----------------------------------
+ t
+(1 row)
+```
+
+*Configure the target database:*
+
+```sh
+$ ./psql target
+
+postgres=# \i /lab/target_setup.sql 
+SET
+CREATE ROLE
+CREATE DATABASE
+You are now connected to database "lab_target" as user "lab".
+CREATE EXTENSION
+ create_node 
+-------------
+  2941155235
+(1 row)
+
+ create_subscription 
+---------------------
+          2875150205
+(1 row)
+```
+
+Replication is now running, and you will see the `colors` table in the target database.
+
+Insert or update rows on the source and see them appear on the target.  w00t.
+
+
+
+
+## Replication Notes
 
 `nodes` represent servers, and are used for reference *and* connections.
 

@@ -54,6 +54,9 @@ insert into colors (name, description) values (
     ('puce', 'Leave it!')
 )
 
+-- Add in HTML extended colors.
+\i /lab/bulk_colors.sql
+
 
 
 -- Generate sequence synchronization script for all sequennces.
